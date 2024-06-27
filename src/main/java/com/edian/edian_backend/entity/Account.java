@@ -24,4 +24,12 @@ public class Account {
     @Convert(converter = BooleanToYesNoConverter.class)
     @Column(name = "account_status")
     private boolean isActive;
+    @ManyToOne
+    @JoinColumn(name = "agent_id")
+    private Agent agent;
+
+    @ManyToOne
+    @JoinColumn(name = "named_insured_id")
+    private NamedInsured namedInsured;
+
 }

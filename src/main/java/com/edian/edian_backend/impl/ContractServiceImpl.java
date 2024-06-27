@@ -24,7 +24,7 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public ContractDto createContract(ContractDto dto) {
-        Contract contract = ContractServiceUtility.toContract(dto, policyRepository, namedInsuredRepository, agentRepository);
+        Contract contract = ContractServiceUtility.toContract(dto, policyRepository);
         Contract savedContract = contractRepository.save(contract);
         return ContractServiceUtility.toContractDto(savedContract);
     }
@@ -46,7 +46,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public ContractDto updateContract(Long id, ContractDto updatedDto) {
         Contract contract = findContractById(id);
-        ContractServiceUtility.updateContract(contract, updatedDto, policyRepository, namedInsuredRepository, agentRepository);
+        ContractServiceUtility.updateContract(contract, updatedDto, policyRepository);
         Contract updatedContract = contractRepository.save(contract);
         return ContractServiceUtility.toContractDto(updatedContract);
     }
@@ -60,7 +60,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public List<ContractDto> addContracts(List<ContractDto> dtoList) {
         List<Contract> contractList = dtoList.stream()
-                .map(dto -> ContractServiceUtility.toContract(dto, policyRepository, namedInsuredRepository, agentRepository))
+                .map(dto -> ContractServiceUtility.toContract(dto, policyRepository))
                 .collect(Collectors.toList());
 
         List<Contract> savedContractList = contractRepository.saveAll(contractList);

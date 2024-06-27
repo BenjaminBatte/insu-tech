@@ -19,18 +19,9 @@ public class Policy {
 
     @Column(unique = true, nullable = false)
     private String policyNumber;
-    @Enumerated(EnumType.STRING)
-    @ManyToOne
-    @JoinColumn(name = "named_insured_id")
-    private NamedInsured namedInsured;
-
-    @ManyToOne
-    @JoinColumn(name = "agent_id")
-    private Agent agent;
-
     @JoinColumn(name = "bundle_id")
     private String  bundleId;
 
-    @OneToMany(mappedBy = "contractId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "policy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Contract> contracts;
 }

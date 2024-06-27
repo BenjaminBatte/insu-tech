@@ -12,8 +12,6 @@ import java.util.List;
 public class PolicyDto {
     private Long id;
     private String policyNumber;
-    private Long namedInsuredId;
-    private Long agentId;
     private String bundleId;
     private List<ContractDto> contracts;
 }

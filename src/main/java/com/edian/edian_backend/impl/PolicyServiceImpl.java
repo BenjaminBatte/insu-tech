@@ -18,12 +18,10 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PolicyServiceImpl implements PolicyService {
     private final PolicyRepository policyRepository;
-    private final NamedInsuredRepository namedInsuredRepository;
-    private final AgentRepository agentRepository;
 
     @Override
     public PolicyDto createPolicy(PolicyDto dto) {
-        Policy policy = PolicyServiceUtility.toPolicy(dto, namedInsuredRepository, agentRepository);
+        Policy policy = PolicyServiceUtility.toPolicy(dto);
         Policy savedPolicy = policyRepository.save(policy);
         return PolicyServiceUtility.toPolicyDto(savedPolicy);
     }
@@ -45,7 +43,7 @@ public class PolicyServiceImpl implements PolicyService {
     @Override
     public PolicyDto updatePolicy(Long id, PolicyDto updatedDto) {
         Policy policy = findPolicyById(id);
-        PolicyServiceUtility.updatePolicy(policy, updatedDto, namedInsuredRepository, agentRepository);
+        PolicyServiceUtility.updatePolicy(policy, updatedDto);
         Policy updatedPolicy = policyRepository.save(policy);
         return PolicyServiceUtility.toPolicyDto(updatedPolicy);
     }
@@ -59,7 +57,7 @@ public class PolicyServiceImpl implements PolicyService {
     @Override
     public List<PolicyDto> addPolicies(List<PolicyDto> dtoList) {
         List<Policy> policyList = dtoList.stream()
-                .map(dto -> PolicyServiceUtility.toPolicy(dto, namedInsuredRepository, agentRepository))
+                .map(PolicyServiceUtility::toPolicy)
                 .collect(Collectors.toList());
 
         List<Policy> savedPolicyList = policyRepository.saveAll(policyList);
@@ -72,5 +70,9 @@ public class PolicyServiceImpl implements PolicyService {
     private Policy findPolicyById(Long id) {
         return policyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Policy with id " + id + " not found"));
+    }
+    @Override
+    public void deleteAllPolicies() {
+        policyRepository.deleteAll();
     }
 }

@@ -13,4 +13,6 @@ public class AccountDto {
     private String name;
     private String type;
     private boolean isActive;
+    private Long agentId;
+    private Long namedInsuredId;
 }

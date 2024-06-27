@@ -12,4 +12,5 @@ public interface PolicyService {
     PolicyDto updatePolicy(Long id, PolicyDto updatedDto);
     void deletePolicy(Long id);
     List<PolicyDto> addPolicies(List<PolicyDto> dtoList);
+    void deleteAllPolicies();
 }

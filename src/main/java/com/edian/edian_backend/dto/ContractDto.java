@@ -17,6 +17,4 @@ public class ContractDto {
     private String statusId;
     private Integer renewalNumber;
     private String policyNumber;
-    private Long namedInsuredId;
-    private Long agentId;
 }

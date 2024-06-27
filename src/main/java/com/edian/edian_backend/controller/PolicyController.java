@@ -50,4 +50,9 @@ public class PolicyController {
         List<PolicyDto> savedPolicyList = policyService.addPolicies(dtoList);
         return new ResponseEntity<>(savedPolicyList, HttpStatus.CREATED);
     }
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllPolicies() {
+        policyService.deleteAllPolicies();
+        return ResponseEntity.ok("All policies deleted successfully");
+    }
 }

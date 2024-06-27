@@ -5,6 +5,8 @@ import com.edian.edian_backend.dto.AccountDto;
 import com.edian.edian_backend.entity.Account;
 import com.edian.edian_backend.exception.ResourceNotFoundException;
 import com.edian.edian_backend.repository.AccountRepository;
+import com.edian.edian_backend.repository.AgentRepository;
+import com.edian.edian_backend.repository.NamedInsuredRepository;
 import com.edian.edian_backend.service.AccountService;
 import com.edian.edian_backend.utility.AccountServiceUtility;
 import lombok.AllArgsConstructor;
@@ -17,13 +19,15 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
+    private final AgentRepository agentRepository;
+    private final NamedInsuredRepository namedInsuredRepository;
 
     @Override
     public AccountDto createAccount(AccountDto dto) {
         if (accountRepository.existsByNumber(dto.getNumber())){
             throw new IllegalArgumentException("Account with name " + dto.getName() + " already exists.");
         }
-        Account account = AccountServiceUtility.toAccount(dto);
+        Account account = AccountServiceUtility.toAccount(dto,agentRepository,namedInsuredRepository);
         account.setActive(true); // Ensure the account is active by default
         Account savedAccount = accountRepository.save(account);
         return AccountServiceUtility.toAccountDto(savedAccount);
@@ -80,6 +84,7 @@ public class AccountServiceImpl implements AccountService {
                 .map(AccountServiceUtility::toAccountDto)
                 .collect(Collectors.toList());
     }
+    @Override
     public List<AccountDto> createAccounts(List<AccountDto> accountDtoList) {
         // Check for duplicates in the list based on account number
         List<String> existingAccountNumbers = accountDtoList.stream()
@@ -93,7 +98,7 @@ public class AccountServiceImpl implements AccountService {
 
         // Map DTOs to entities, set them as active, and save them
         List<Account> accounts = accountDtoList.stream()
-                .map(AccountServiceUtility::toAccount)
+                .map(dto -> AccountServiceUtility.toAccount(dto, agentRepository, namedInsuredRepository))
                 .peek(account -> account.setActive(true)) // Ensure all accounts are active by default
                 .collect(Collectors.toList());
 
@@ -102,6 +107,7 @@ public class AccountServiceImpl implements AccountService {
                 .map(AccountServiceUtility::toAccountDto)
                 .collect(Collectors.toList());
     }
+
     // Private helper method to find account by id and handle exception
     private Account findAccountById(Long id) {
         return accountRepository.findById(id)

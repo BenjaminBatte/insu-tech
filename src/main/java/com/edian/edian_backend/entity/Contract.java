@@ -48,11 +48,4 @@ public class Contract {
     @JoinColumn(name = "policy_number", referencedColumnName = "policyNumber", nullable = false)
     private Policy policy;
 
-    @ManyToOne
-    @JoinColumn(name = "named_insured_id", referencedColumnName = "id", nullable = false)
-    private NamedInsured namedInsured;
-
-    @ManyToOne
-    @JoinColumn(name = "agent_id", referencedColumnName = "id", nullable = false)
-    private Agent agent;
 }

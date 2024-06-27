@@ -4,8 +4,7 @@ import com.edian.edian_backend.common.ContractStatus;
 import com.edian.edian_backend.dto.ContractDto;
 import com.edian.edian_backend.entity.Contract;
 import com.edian.edian_backend.entity.Policy;
-import com.edian.edian_backend.entity.NamedInsured;
-import com.edian.edian_backend.entity.Agent;
+
 import com.edian.edian_backend.exception.ResourceNotFoundException;
 import com.edian.edian_backend.repository.PolicyRepository;
 import com.edian.edian_backend.repository.NamedInsuredRepository;
@@ -33,14 +32,6 @@ public class ContractServiceUtility {
             dto.setPolicyNumber(contract.getPolicy().getPolicyNumber());
         }
 
-        if (contract.getNamedInsured() != null) {
-            dto.setNamedInsuredId(contract.getNamedInsured().getId());
-        }
-
-        if (contract.getAgent() != null) {
-            dto.setAgentId(contract.getAgent().getId());
-        }
-
         return dto;
     }
     private static Long generateRandomPolicyNumber() {
@@ -48,7 +39,7 @@ public class ContractServiceUtility {
         long max = 9999999L; // Maximum value for 6-digit number (9999999)
         return min + (long) (Math.random() * (max - min));
     }
-    public static Contract toContract(ContractDto dto, PolicyRepository policyRepository, NamedInsuredRepository namedInsuredRepository, AgentRepository agentRepository) {
+    public static Contract toContract(ContractDto dto, PolicyRepository policyRepository) {
         Contract contract = new Contract();
         contract.setId(dto.getId());
         contract.setContractId(generateRandomPolicyNumber().toString());
@@ -60,13 +51,11 @@ public class ContractServiceUtility {
         contract.setRenewalNumber(dto.getRenewalNumber());
 
         setPolicy(dto, contract, policyRepository);
-        setNamedInsured(dto, contract, namedInsuredRepository);
-        setAgent(dto, contract, agentRepository);
 
         return contract;
     }
 
-    public static void updateContract(Contract contract, ContractDto dto, PolicyRepository policyRepository, NamedInsuredRepository namedInsuredRepository, AgentRepository agentRepository) {
+    public static void updateContract(Contract contract, ContractDto dto, PolicyRepository policyRepository) {
         UpdateUtility.updateIfNotNull(contract::setContractId, dto.getContractId());
         UpdateUtility.updateIfNotNull(contract::setPremium, dto.getPremium());
         UpdateUtility.updateIfNotNull(contract::setStartDate, dto.getStartDate());
@@ -75,8 +64,6 @@ public class ContractServiceUtility {
         UpdateUtility.updateIfNotNull(contract::setRenewalNumber, dto.getRenewalNumber());
 
         setPolicy(dto, contract, policyRepository);
-        setNamedInsured(dto, contract, namedInsuredRepository);
-        setAgent(dto, contract, agentRepository);
     }
 
     private static void setPolicy(ContractDto dto, Contract contract, PolicyRepository policyRepository) {
@@ -87,19 +74,5 @@ public class ContractServiceUtility {
         }
     }
 
-    private static void setNamedInsured(ContractDto dto, Contract contract, NamedInsuredRepository namedInsuredRepository) {
-        if (dto.getNamedInsuredId() != null) {
-            NamedInsured namedInsured = namedInsuredRepository.findById(dto.getNamedInsuredId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Named insured with id " + dto.getNamedInsuredId() + " not found"));
-            contract.setNamedInsured(namedInsured);
-        }
-    }
 
-    private static void setAgent(ContractDto dto, Contract contract, AgentRepository agentRepository) {
-        if (dto.getAgentId() != null) {
-            Agent agent = agentRepository.findById(dto.getAgentId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Agent with id " + dto.getAgentId() + " not found"));
-            contract.setAgent(agent);
-        }
-    }
 }
