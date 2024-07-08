@@ -1,4 +1,5 @@
 package com.edian.edian_backend.entity;
+
 import com.edian.edian_backend.common.AccountType;
 import com.edian.edian_backend.common.BooleanToYesNoConverter;
 import jakarta.persistence.*;
@@ -10,26 +11,26 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "accounts")
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String number;
+
+    @Column(unique = true, nullable = false)
+    private Long accountNumber;
+
     private String name;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "type")
-    private AccountType type; // Enum for Standard, Leasing
+    private AccountType type;
+
     @Convert(converter = BooleanToYesNoConverter.class)
-    @Column(name = "account_status")
     private boolean isActive;
+
     @ManyToOne
-    @JoinColumn(name = "agent_id")
     private Agent agent;
 
-    @ManyToOne
-    @JoinColumn(name = "named_insured_id")
+    @OneToOne
+    @JoinColumn( unique = true, nullable = true)
     private NamedInsured namedInsured;
-
 }

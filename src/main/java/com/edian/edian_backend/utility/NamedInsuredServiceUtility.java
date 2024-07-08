@@ -25,7 +25,7 @@ public class NamedInsuredServiceUtility {
         }
 
         if (namedInsured.getAccount() != null) {
-            dto.setAccountNumber(namedInsured.getAccount().getNumber());
+            dto.setAccountNumber(namedInsured.getAccount().getAccountNumber());
         }
 
         return dto;
@@ -64,7 +64,7 @@ public class NamedInsuredServiceUtility {
 
     private static void setAccount(NamedInsuredDto dto, NamedInsured namedInsured, AccountRepository accountRepository) {
         if (dto.getAccountNumber() != null) {
-            Account account = accountRepository.findByNumber(dto.getAccountNumber());
+            Account account = accountRepository.findByAccountNumber((dto.getAccountNumber()));
             if (account == null) {
                 throw new ResourceNotFoundException("Account with number " + dto.getAccountNumber() + " not found");
             }

@@ -13,5 +13,5 @@ public class NamedInsuredDto {
     private String email;
     private String phoneNumber;
     private Long addressId;
-    private String accountNumber;
+    private Long accountNumber;
 }

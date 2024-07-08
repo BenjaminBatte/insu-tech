@@ -24,7 +24,6 @@ public class NamedInsured {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
-    @ManyToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "namedInsured", cascade = CascadeType.ALL)
     private Account account;
 }

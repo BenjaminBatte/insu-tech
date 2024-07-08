@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Account Management</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+<div class="container mt-4">
+    <h1>Account Management</h1>
+    <form id="accountForm" class="mb-4">
+        <input type="hidden" id="accountId"> <!-- Add hidden field for account ID -->
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="type">Type</label>
+            <input type="text" id="type" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="agentId">Agent ID</label>
+            <input type="number" id="agentId" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="namedInsuredId">Named Insured ID</label>
+            <input type="number" id="namedInsuredId" class="form-control" required>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="createAccount()">Add Account</button>
+        <button type="button" class="btn btn-secondary" onclick="updateAccount()">Update Account</button>
+    </form>
+    <h2>Accounts</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Account Number</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Agent ID</th>
+            <th>Named Insured ID</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="accountsTable">
+        </tbody>
+    </table>
+</div>
+<script>
+    const apiUrl = 'http://localhost:8080/api/accounts';
+
+    function fetchAccounts() {
+        $.get(apiUrl, function(accounts) {
+            $('#accountsTable').empty();
+            accounts.forEach(account => {
+                account.accountNumber = undefined;
+                $('#accountsTable').append(`
+                <tr>
+                    <td>${account.accountNumber}</td> <!-- Display Long type accountNumber -->
+                    <td>${account.name}</td>
+                    <td>${account.type}</td>
+                    <td>${account.agentId}</td>
+                    <td>${account.namedInsuredId}</td>
+                    <td>
+                        <button class="btn btn-warning" onclick="editAccount(${account.id})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteAccount(${account.id})">Delete</button>
+                    </td>
+                </tr>
+            `);
+            });
+        });
+    }
+
+    function editAccount(id) {
+        $.get(`${apiUrl}/${id}`, function(account) {
+            $('#accountId').val(account.id); // Set the account ID in the hidden field
+            $('#name').val(account.name);
+            $('#type').val(account.type);
+            $('#agentId').val(account.agentId);
+            $('#namedInsuredId').val(account.namedInsuredId);
+        });
+    }
+
+    function createAccount() {
+        const account = {
+            name: $('#name').val(),
+            type: $('#type').val(),
+            agentId: $('#agentId').val(),
+            namedInsuredId: $('#namedInsuredId').val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: apiUrl,
+            data: JSON.stringify(account),
+            contentType: 'application/json',
+            success: function() {
+                fetchAccounts();
+                $('#accountForm')[0].reset();
+            }
+        });
+    }
+
+    function updateAccount() {
+        const account = {
+            id: $('#accountId').val(), // Use account ID for identification
+            name: $('#name').val(),
+            type: $('#type').val(),
+            agentId: $('#agentId').val(),
+            namedInsuredId: $('#namedInsuredId').val()
+        };
+
+        $.ajax({
+            type: 'PUT',
+            url: `${apiUrl}/${account.id}`,
+            data: JSON.stringify(account),
+            contentType: 'application/json',
+            success: function() {
+                fetchAccounts();
+                $('#accountForm')[0].reset();
+            }
+        });
+    }
+
+    function deleteAccount(id) {
+        $.ajax({
+            type: 'DELETE',
+            url: `${apiUrl}/${id}`,
+            success: function() {
+                fetchAccounts();
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        fetchAccounts();
+    });
+</script>
+</body>
+</html>
